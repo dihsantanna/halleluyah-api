@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String?
+  email     String    @unique
+  password  String
+  role      Role      @default(member)
+  image     String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  musicsAdded    Music[]         @relation("added_by_user")
+  musicsApproved Music[]         @relation("approved_by_user")
+  sessions       Session[]
+  playlist       Playlist[]
+  playlistMusic  PlaylistMusic[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  userId       Int       @map("user_id")
+  refreshToken String    @unique @map("refresh_token")
+  deviceInfo   String?   @map("device_info")
+  lastActivity DateTime  @default(now()) @map("last_activity")
+  expiresAt    DateTime  @map("expires_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Music {
+  id         Int       @id @default(autoincrement())
+  title      String
+  artist     String
+  cipherUrl  String?
+  mediaUrl   String?
+  lyrics     String?
+  addedBy    Int       @map("added_by")
+  approvedBy Int?      @map("approved_by")
+  aprovedAt  DateTime? @map("approved_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  addedByUser    User            @relation("added_by_user", fields: [addedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  approvedByUser User?           @relation("approved_by_user", fields: [approvedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  playlistsMusic PlaylistMusic[]
+
+  @@map("musics")
+}
+
+model Playlist {
+  id          Int       @id @default(autoincrement())
+  description String?
+  date        DateTime
+  createdBy   Int       @map("created_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  playlistMusics PlaylistMusic[]
+  user           User            @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("playlists")
+}
+
+model PlaylistMusic {
+  musicId    Int      @map("music_id")
+  playlistId Int      @map("playlist_id")
+  addedBy    Int      @map("added_by")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  music    Music    @relation(fields: [musicId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user     User     @relation(fields: [addedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([musicId, playlistId])
+  @@map("playlist_musics")
+}
+
+enum Role {
+  leader
+  member
+
+  @@map("roles")
+}

@@ -1,5 +1,8 @@
-import { app } from './app'
+import 'express-async-errors'
+import 'tsconfig-paths/register'
 import 'dotenv/config'
+
+import { app } from './app'
 
 const port = process.env.PORT || 4000
 
