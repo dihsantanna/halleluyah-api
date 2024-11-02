@@ -30,9 +30,11 @@ export const tokenSchema = z.object({
   sub: z.number({
     message: 'Token inválido',
   }),
-  sessionId: z.string({
-    message: 'Token inválido',
-  }),
+  sessionId: z
+    .string({
+      message: 'Token inválido',
+    })
+    .cuid('Token inválido'),
   role: z
     .enum(['leader', 'member'], {
       message: 'Token inválido',

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 
 import type { AuthService } from '@/modules/auth/auth.service'
-import { loginSchema, registerSchema } from '@/modules/auth/dtos/auth.dto'
+import { loginSchema, registerSchema } from '@/modules/auth/dto/auth.dto'
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {

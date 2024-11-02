@@ -21,7 +21,7 @@ export const authMiddleware = async (
     throw new AppError('Token inválido', 401)
   }
 
-  const payload = await verifyToken(token)
+  const payload = verifyToken(token)
 
   if (!payload) {
     throw new AppError('Token inválido', 401)

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 
 import { env } from '@/config/env'
-import { type TokenDTO, tokenSchema } from '@/modules/auth/dtos/auth.dto'
+import { type TokenDTO, tokenSchema } from '@/modules/auth/dto/auth.dto'
 
 export type TokenPayload = Omit<TokenDTO, 'iat' | 'exp'>
 
@@ -23,14 +23,14 @@ export const generateTokens = (
   }
 }
 
-export const verifyToken = async (
+export const verifyToken = (
   token: string,
   isRefresh = false,
-): Promise<TokenDTO | null> => {
+): TokenDTO | null => {
   try {
     const secret = isRefresh ? env.JWT_REFRESH_SECRET : env.JWT_SECRET
     const parsedToken = jwt.verify(token, secret) as unknown as TokenDTO
-    return await tokenSchema.parseAsync(parsedToken)
+    return tokenSchema.parse(parsedToken)
   } catch {
     return null
   }

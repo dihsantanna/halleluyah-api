@@ -2,7 +2,7 @@ import type { PrismaClient, User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import moment from 'moment'
 
-import type { LoginDTO, RegisterDTO } from '@/modules/auth/dtos/auth.dto'
+import type { LoginDTO, RegisterDTO } from '@/modules/auth/dto/auth.dto'
 import { generateTokens } from '@/utils/auth/tokens'
 import { AppError } from '@/utils/errors/AppError'
 import { ValidationError } from '@/utils/errors/ValidationError'
