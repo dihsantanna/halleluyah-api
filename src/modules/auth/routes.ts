@@ -15,6 +15,7 @@ export const authRoutes = (authController: AuthController) => {
   // Rotas Privadas
   router.use(authMiddleware)
 
+  router.get('/me', authController.me)
   router.post('/logout', authController.logout)
   router.post('/logout-all', authController.logoutAll)
 

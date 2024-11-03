@@ -13,6 +13,7 @@ export class AuthService {
     private readonly prisma: PrismaClient,
     private readonly hashid: HashidTransformer,
   ) {
+    this.me = this.me.bind(this)
     this.register = this.register.bind(this)
     this.login = this.login.bind(this)
     this.refreshToken = this.refreshToken.bind(this)
@@ -138,6 +139,19 @@ export class AuthService {
     return {
       ...tokens,
     }
+  }
+
+  async me(userId: number) {
+    const { password, ...user } =
+      (await this.prisma.user.findUnique({
+        where: { id: userId },
+      })) ?? {}
+
+    if (!user) {
+      throw new AppError('Usuário não encontrado', 404)
+    }
+
+    return user as UserOmitPass
   }
 
   async refreshToken(oldRefreshToken: string) {

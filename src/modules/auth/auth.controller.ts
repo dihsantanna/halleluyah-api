@@ -4,11 +4,13 @@ import type { AuthService } from '@/modules/auth/auth.service'
 import { loginSchema, registerSchema } from '@/modules/auth/dto/auth.dto'
 import { LoginResource } from '@/modules/auth/resource/login.resource'
 import { RegisterResource } from '@/modules/auth/resource/register.resource'
+import { UserResource } from '@/modules/auth/resource/user.resource'
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {
     this.register = this.register.bind(this)
     this.login = this.login.bind(this)
+    this.me = this.me.bind(this)
     this.refresh = this.refresh.bind(this)
     this.logout = this.logout.bind(this)
     this.logoutAll = this.logoutAll.bind(this)
@@ -29,6 +31,12 @@ export class AuthController {
 
     res.json(new LoginResource(result))
 
+    return
+  }
+
+  async me(req: Request, res: Response) {
+    const user = await this.authService.me(req.auth.user.id)
+    res.json(new UserResource(user))
     return
   }
 
