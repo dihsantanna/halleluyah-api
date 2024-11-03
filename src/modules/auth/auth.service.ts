@@ -2,13 +2,17 @@ import type { PrismaClient, User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import moment from 'moment'
 
+import type { HashidTransformer } from '@/config/hashid'
 import type { LoginDTO, RegisterDTO } from '@/modules/auth/dto/auth.dto'
 import { generateTokens } from '@/utils/auth/tokens'
 import { AppError } from '@/utils/errors/AppError'
 import { ValidationError } from '@/utils/errors/ValidationError'
 
 export class AuthService {
-  constructor(private readonly prisma: PrismaClient) {
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly hashid: HashidTransformer,
+  ) {
     this.register = this.register.bind(this)
     this.login = this.login.bind(this)
     this.refreshToken = this.refreshToken.bind(this)
@@ -107,9 +111,7 @@ export class AuthService {
       )
     }
 
-    const { password, ...rest } = user
-
-    const validPassword = await bcrypt.compare(data.password, password)
+    const validPassword = await bcrypt.compare(data.password, user.password)
 
     if (!validPassword) {
       throw new ValidationError(
@@ -134,8 +136,7 @@ export class AuthService {
     )
 
     return {
-      user: rest,
-      session: tokens,
+      ...tokens,
     }
   }
 

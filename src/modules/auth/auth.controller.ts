@@ -2,6 +2,8 @@ import type { Request, Response } from 'express'
 
 import type { AuthService } from '@/modules/auth/auth.service'
 import { loginSchema, registerSchema } from '@/modules/auth/dto/auth.dto'
+import { LoginResource } from '@/modules/auth/resource/login.resource'
+import { RegisterResource } from '@/modules/auth/resource/register.resource'
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {
@@ -16,9 +18,7 @@ export class AuthController {
     const data = registerSchema.parse(req.body)
     const user = await this.authService.register(data)
 
-    res.status(201).json({
-      user,
-    })
+    res.status(201).json(new RegisterResource(user))
 
     return
   }
@@ -27,7 +27,7 @@ export class AuthController {
     const data = loginSchema.parse(req.body)
     const result = await this.authService.login(data)
 
-    res.json(result)
+    res.json(new LoginResource(result))
 
     return
   }
@@ -42,7 +42,7 @@ export class AuthController {
 
     const tokens = await this.authService.refreshToken(refresh_token)
 
-    res.json(tokens)
+    res.json(new LoginResource(tokens))
 
     return
   }

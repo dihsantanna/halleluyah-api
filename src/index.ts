@@ -1,11 +1,9 @@
 import 'express-async-errors'
 import 'tsconfig-paths/register'
-import 'dotenv/config'
 
 import { app } from './app'
+import { env } from './config/env'
 
-const port = process.env.PORT || 4000
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+app.listen(env.PORT, () => {
+  console.log(`Server is running on port ${env.PORT}`)
 })

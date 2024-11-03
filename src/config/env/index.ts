@@ -12,6 +12,11 @@ const envSchema = z.object({
 
   JWT_SECRET: z.string(),
   JWT_REFRESH_SECRET: z.string(),
+  HASHID_SALT: z.string(),
+  HASHID_MIN_LENGTH: z.string().transform(Number).default('6'),
+  HASHID_ALPHABET: z
+    .string()
+    .default('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'),
 })
 
 const _env = envSchema.safeParse(process.env)

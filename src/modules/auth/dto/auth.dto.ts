@@ -1,3 +1,4 @@
+import { hashidTransformer } from '@/config/di'
 import { z } from 'zod'
 
 const passwordSchema = z
@@ -27,9 +28,11 @@ export const registerSchema = z.object({
 })
 
 export const tokenSchema = z.object({
-  sub: z.number({
-    message: 'Token inválido',
-  }),
+  sub: z
+    .string({
+      message: 'Token inválido',
+    })
+    .transform((value) => hashidTransformer.decode(value)),
   sessionId: z
     .string({
       message: 'Token inválido',
